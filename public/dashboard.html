@@ -2242,7 +2242,7 @@
       </span>
     </div>
 
-    <div class="nav-item" data-page="heatmap" data-label="Heatmap" onclick="switchPage('heatmap', this)">
+    <div class="nav-item" data-page="heatmaps" data-label="Heatmaps" onclick="switchPage('heatmaps', this)">
       <span class="nav-icon">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/><path d="M3 9h6M3 15h6M9 3v6M15 3v6M15 9h6M15 15h6M9 15v6M15 15v6"/></svg>
       </span>
@@ -2955,11 +2955,11 @@
     </div>
 
     <!-- ===================== PAGE: HEATMAP ===================== -->
-    <div class="page" id="page-heatmap">
+    <div class="page" id="page-heatmaps">
 
       <div class="page-header">
         <div>
-          <div class="page-title">Heatmap</div>
+          <div class="page-title">Heatmaps</div>
           <div class="page-subtitle">Market performance at a glance</div>
         </div>
         <div style="display:flex;align-items:center;gap:12px;">
@@ -3005,10 +3005,10 @@
           <div class="page-subtitle">Market intelligence &amp; insights</div>
         </div>
         <div style="display:flex;gap:8px;">
-          <button class="filter-btn active">All</button>
-          <button class="filter-btn">BTC</button>
-          <button class="filter-btn">ETH</button>
-          <button class="filter-btn">Macro</button>
+          <button class="filter-btn active" onclick="filterSignals(this,'all')">All</button>
+          <button class="filter-btn" onclick="filterSignals(this,'BTC')">BTC</button>
+          <button class="filter-btn" onclick="filterSignals(this,'ETH')">ETH</button>
+          <button class="filter-btn" onclick="filterSignals(this,'MACRO')">Macro</button>
         </div>
       </div>
 
@@ -3055,10 +3055,10 @@
           <div class="page-subtitle">Complete transaction log</div>
         </div>
         <div style="display:flex;gap:8px;">
-          <button class="filter-btn active">All</button>
-          <button class="filter-btn">Buy</button>
-          <button class="filter-btn">Sell</button>
-          <button class="filter-btn">Receive</button>
+          <button class="filter-btn active" onclick="filterHistory(this,'all')">All</button>
+          <button class="filter-btn" onclick="filterHistory(this,'buy')">Buy</button>
+          <button class="filter-btn" onclick="filterHistory(this,'sell')">Sell</button>
+          <button class="filter-btn" onclick="filterHistory(this,'receive')">Receive</button>
         </div>
       </div>
 
@@ -3093,7 +3093,7 @@
           <div class="page-title">Reports</div>
           <div class="page-subtitle">Detailed P&amp;L analysis</div>
         </div>
-        <button class="filter-btn active" style="padding:6px 16px;">Export CSV</button>
+        <button class="filter-btn active" style="padding:6px 16px;" onclick="exportReportsCsv()">Export CSV</button>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;flex-shrink:0;">
