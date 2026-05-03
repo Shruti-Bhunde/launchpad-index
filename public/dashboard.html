@@ -52,6 +52,67 @@
     transform: translateY(0);
   }
 
+  body,
+  .app-wrapper,
+  .sidebar,
+  .topbar,
+  .card,
+  .market-table thead th,
+  .search-input,
+  .trade-input,
+  .nav-item {
+    transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+  }
+
+  body.light-theme {
+    --black: #f4f6fa;
+    --white: #0a0d12;
+    --gray-100: #111827;
+    --gray-200: #1f2937;
+    --gray-300: #374151;
+    --gray-400: #4b5563;
+    --gray-500: #6b7280;
+    --gray-600: #9ca3af;
+    --gray-700: #d1d5db;
+    --gray-800: #eef2f7;
+    --gray-900: #ffffff;
+    --glow: rgba(0,0,0,0.08);
+    background: var(--black);
+    color: var(--white);
+  }
+
+  body.light-theme .aurora-base { background: linear-gradient(180deg, #edf2f7 0%, #f8fafc 100%); }
+  body.light-theme .aurora-wave-1 { opacity: 0.12; }
+  body.light-theme .aurora-wave-2 { opacity: 0.10; }
+  body.light-theme .aurora-wave-3 { opacity: 0.08; }
+  body.light-theme .topbar { background: rgba(255,255,255,0.92); border-bottom-color: rgba(0,0,0,0.08); }
+  body.light-theme .sidebar { background: rgba(255,255,255,0.86); border-right-color: rgba(0,0,0,0.08); }
+  body.light-theme .card,
+  body.light-theme .dashboard-summary,
+  body.light-theme .hero-panel,
+  body.light-theme .mover-card { background: rgba(255,255,255,0.78); border-color: rgba(0,0,0,0.09); box-shadow: 0 12px 36px rgba(15,23,42,0.08); }
+  body.light-theme .card::before { background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(0,126,68,0.09), transparent 60%); }
+  body.light-theme .nav-item { color: var(--gray-400); }
+  body.light-theme .nav-item:hover,
+  body.light-theme .nav-item.active { background: rgba(0,126,68,0.08); border-color: rgba(0,126,68,0.22); color: var(--bull); }
+  body.light-theme .market-table thead th { background: rgba(255,255,255,0.95); }
+  body.light-theme .market-table tbody tr:hover,
+  body.light-theme .watchlist-item:hover,
+  body.light-theme .pnl-row:hover,
+  body.light-theme .tx-row:hover { background: rgba(0,0,0,0.04); }
+  body.light-theme .search-input,
+  body.light-theme .trade-input,
+  body.light-theme select.trade-input { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: var(--white); }
+  body.light-theme .filter-btn,
+  body.light-theme .time-btn,
+  body.light-theme .ctype-btn,
+  body.light-theme .btn-icon { border-color: rgba(0,0,0,0.12); color: var(--gray-400); }
+  body.light-theme .filter-btn:hover,
+  body.light-theme .time-btn:hover,
+  body.light-theme .ctype-btn:hover,
+  body.light-theme .btn-icon:hover { color: var(--white); border-color: rgba(0,126,68,0.25); background: rgba(0,126,68,0.06); }
+  body.light-theme .toggle.off { background: rgba(0,0,0,0.14); }
+
   body::before { content: none; }
 
   body::after { content: none; }
@@ -2242,7 +2303,7 @@
       </span>
     </div>
 
-    <div class="nav-item" data-page="heatmap" data-label="Heatmap" onclick="switchPage('heatmap', this)">
+    <div class="nav-item" data-page="heatmaps" data-label="Heatmaps" onclick="switchPage('heatmaps', this)">
       <span class="nav-icon">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6v6H9z"/><path d="M3 9h6M3 15h6M9 3v6M15 3v6M15 9h6M15 15h6M9 15v6M15 15v6"/></svg>
       </span>
@@ -2868,12 +2929,12 @@
               <span>Fee (0.1%):</span>
               <span style="color:var(--white);" id="tradeFee">$0.00</span>
             </div>
-            <button class="btn-trade buy" id="tradeBtn">BUY BITCOIN</button>
+            <button class="btn-trade buy" id="tradeBtn" onclick="placeStaticOrder()">BUY BITCOIN</button>
           </div>
 
           <div class="card card-pad">
             <div style="font-size:10px;color:var(--gray-600);font-family:'Space Mono',monospace;letter-spacing:1px;margin-bottom:10px;">OPEN ORDERS</div>
-            <div style="font-size:12px;color:var(--gray-600);text-align:center;padding:20px 0;">No open orders</div>
+            <div id="openOrders" style="font-size:12px;color:var(--gray-600);text-align:center;padding:20px 0;">No open orders</div>
           </div>
         </div>
 
@@ -2955,11 +3016,11 @@
     </div>
 
     <!-- ===================== PAGE: HEATMAP ===================== -->
-    <div class="page" id="page-heatmap">
+    <div class="page" id="page-heatmaps">
 
       <div class="page-header">
         <div>
-          <div class="page-title">Heatmap</div>
+          <div class="page-title">Heatmaps</div>
           <div class="page-subtitle">Market performance at a glance</div>
         </div>
         <div style="display:flex;align-items:center;gap:12px;">
@@ -3005,10 +3066,10 @@
           <div class="page-subtitle">Market intelligence &amp; insights</div>
         </div>
         <div style="display:flex;gap:8px;">
-          <button class="filter-btn active">All</button>
-          <button class="filter-btn">BTC</button>
-          <button class="filter-btn">ETH</button>
-          <button class="filter-btn">Macro</button>
+          <button class="filter-btn active" onclick="filterSignals(this,'all')">All</button>
+          <button class="filter-btn" onclick="filterSignals(this,'BTC')">BTC</button>
+          <button class="filter-btn" onclick="filterSignals(this,'ETH')">ETH</button>
+          <button class="filter-btn" onclick="filterSignals(this,'MACRO')">Macro</button>
         </div>
       </div>
 
@@ -3055,10 +3116,10 @@
           <div class="page-subtitle">Complete transaction log</div>
         </div>
         <div style="display:flex;gap:8px;">
-          <button class="filter-btn active">All</button>
-          <button class="filter-btn">Buy</button>
-          <button class="filter-btn">Sell</button>
-          <button class="filter-btn">Receive</button>
+          <button class="filter-btn active" onclick="filterHistory(this,'all')">All</button>
+          <button class="filter-btn" onclick="filterHistory(this,'buy')">Buy</button>
+          <button class="filter-btn" onclick="filterHistory(this,'sell')">Sell</button>
+          <button class="filter-btn" onclick="filterHistory(this,'receive')">Receive</button>
         </div>
       </div>
 
@@ -3093,7 +3154,7 @@
           <div class="page-title">Reports</div>
           <div class="page-subtitle">Detailed P&amp;L analysis</div>
         </div>
-        <button class="filter-btn active" style="padding:6px 16px;">Export CSV</button>
+        <button class="filter-btn active" style="padding:6px 16px;" onclick="exportReportsCsv()">Export CSV</button>
       </div>
 
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;flex-shrink:0;">
@@ -3165,9 +3226,9 @@
 
         <div class="card card-pad">
           <div style="font-size:10px;letter-spacing:1.5px;color:var(--gray-500);font-family:'Space Mono',monospace;margin-bottom:16px;">DISPLAY</div>
-          <div class="toggle-row">
+          <div class="toggle-row" onclick="toggleTheme()">
             <span class="toggle-label">Dark Mode</span>
-            <div class="toggle on"><div class="toggle-knob"></div></div>
+            <div class="toggle on" id="themeToggle" onclick="event.stopPropagation();toggleTheme()"><div class="toggle-knob"></div></div>
           </div>
           <div class="toggle-row">
             <span class="toggle-label">Animations</span>
@@ -3302,11 +3363,12 @@ function switchPage(pageId, navEl) {
     if (pageId === 'portfolio') { drawPerfChart(); buildDonut(); buildPnL(); }
     if (pageId === 'markets') { buildMarketTable(); }
     if (pageId === 'watchlist') { buildFullWatchlist(); buildTransactionsWatch(); }
-    if (pageId === 'heatmap') { buildHeatmap(); }
+    if (pageId === 'heatmaps') { buildHeatmap(); }
     if (pageId === 'signals') { buildNews(); }
     if (pageId === 'history') { buildFullHistory(); }
     if (pageId === 'reports') { buildReports(); }
     if (pageId === 'trade') { resizeAndDrawTrade(); }
+    if (pageId === 'settings') { syncThemeToggle(); }
   }, 50);
 }
 
@@ -3483,23 +3545,27 @@ function buildTransactions(containerId) {
 
 function buildTransactionsWatch() { buildTransactions('txRowsWatch'); }
 
-function buildFullHistory() {
-  const txs = [
-    { type:'buy',     coin:'BTC',  amount:'+0.12 BTC',   val:'$8,074',   date:'May 3, 2026 · 14:22' },
-    { type:'sell',    coin:'ETH',  amount:'-1.5 ETH',    val:'$5,282',   date:'May 3, 2026 · 09:15' },
-    { type:'buy',     coin:'SOL',  amount:'+15 SOL',     val:'$2,670',   date:'May 2, 2026 · 18:44' },
-    { type:'receive', coin:'DOGE', amount:'+5,000 DOGE', val:'$990',     date:'May 1, 2026 · 11:02' },
-    { type:'buy',     coin:'AAVE', amount:'+2 AAVE',     val:'$196',     date:'Apr 30, 2026 · 08:30' },
-    { type:'sell',    coin:'BNB',  amount:'-0.5 BNB',    val:'$206',     date:'Apr 29, 2026 · 17:55' },
-    { type:'buy',     coin:'BTC',  amount:'+0.05 BTC',   val:'$3,364',   date:'Apr 28, 2026 · 12:10' },
-    { type:'buy',     coin:'LINK', amount:'+10 LINK',    val:'$148',     date:'Apr 27, 2026 · 09:01' },
-    { type:'sell',    coin:'DOT',  amount:'-20 DOT',     val:'$164',     date:'Apr 26, 2026 · 16:40' },
-    { type:'buy',     coin:'MATIC',amount:'+500 MATIC',  val:'$360',     date:'Apr 25, 2026 · 14:22' },
-  ];
+const HISTORY_TXS = [
+  { type:'buy',     coin:'BTC',   amount:'+0.12 BTC',    val:'$8,074',  date:'May 3, 2026 · 14:22' },
+  { type:'sell',    coin:'ETH',   amount:'-1.5 ETH',     val:'$5,282',  date:'May 3, 2026 · 09:15' },
+  { type:'buy',     coin:'SOL',   amount:'+15 SOL',      val:'$2,670',  date:'May 2, 2026 · 18:44' },
+  { type:'receive', coin:'DOGE',  amount:'+5,000 DOGE',  val:'$990',    date:'May 1, 2026 · 11:02' },
+  { type:'buy',     coin:'AAVE',  amount:'+2 AAVE',      val:'$196',    date:'Apr 30, 2026 · 08:30' },
+  { type:'sell',    coin:'BNB',   amount:'-0.5 BNB',     val:'$206',    date:'Apr 29, 2026 · 17:55' },
+  { type:'buy',     coin:'BTC',   amount:'+0.05 BTC',    val:'$3,364',  date:'Apr 28, 2026 · 12:10' },
+  { type:'buy',     coin:'LINK',  amount:'+10 LINK',     val:'$148',    date:'Apr 27, 2026 · 09:01' },
+  { type:'sell',    coin:'DOT',   amount:'-20 DOT',      val:'$164',    date:'Apr 26, 2026 · 16:40' },
+  { type:'buy',     coin:'MATIC', amount:'+500 MATIC',   val:'$360',    date:'Apr 25, 2026 · 14:22' },
+  { type:'receive', coin:'USDT',  amount:'+2,000 USDT',  val:'$2,000',  date:'Apr 24, 2026 · 10:05' },
+  { type:'sell',    coin:'AVAX',  amount:'-4 AVAX',      val:'$153',    date:'Apr 23, 2026 · 19:18' },
+];
+
+function buildFullHistory(filter = 'all') {
+  const txs = filter === 'all' ? HISTORY_TXS : HISTORY_TXS.filter(t => t.type === filter);
   const icons = { buy:'↓', sell:'↑', receive:'→' };
   const el = document.getElementById('txFull');
   if (!el) return;
-  el.innerHTML = txs.map(t => `<div class="tx-row">
+  el.innerHTML = txs.length ? txs.map(t => `<div class="tx-row">
     <div class="tx-icon ${t.type}">${icons[t.type]}</div>
     <div class="tx-info">
       <div class="tx-type ${t.type}">${t.type}</div>
@@ -3509,7 +3575,7 @@ function buildFullHistory() {
       <div class="tx-val" style="color:${t.type==='sell'?'var(--bear)':'var(--bull)'}">${t.val}</div>
       <div class="tx-coin">${t.amount}</div>
     </div>
-  </div>`).join('');
+  </div>`).join('') : `<div style="padding:28px 0;text-align:center;color:var(--gray-500);font-family:'Space Mono',monospace;font-size:12px;">No ${filter} transactions found</div>`;
 }
 
 // ====== DONUT CHART ======
@@ -3571,17 +3637,26 @@ function buildPnL() {
 }
 
 // ====== REPORTS ======
+const REPORT_ROWS = [
+  { sym:'BTC', name:'Bitcoin', avg:51240, cur:67284, qty:0.62, gain:true },
+  { sym:'ETH', name:'Ethereum', avg:2840, cur:3521, qty:4.2, gain:true },
+  { sym:'SOL', name:'Solana', avg:202, cur:178, qty:38, gain:false },
+  { sym:'DOGE', name:'Dogecoin', avg:0.141, cur:0.198, qty:12400, gain:true },
+  { sym:'AAVE', name:'Aave', avg:80, cur:98.4, qty:2, gain:true },
+];
+
+const MONTHLY_PERF = [
+  { m:'May 2026', gain:true,  pct:'+3.2%',  val:'+$2,480' },
+  { m:'Apr 2026', gain:true,  pct:'+8.7%',  val:'+$6,120' },
+  { m:'Mar 2026', gain:false, pct:'-2.1%',  val:'-$1,340' },
+  { m:'Feb 2026', gain:true,  pct:'+12.4%', val:'+$7,890' },
+  { m:'Jan 2026', gain:true,  pct:'+5.8%',  val:'+$3,210' },
+];
+
 function buildReports() {
   const el = document.getElementById('reportsPnl');
   if (el) {
-    const rows = [
-      { sym:'BTC', name:'Bitcoin', avg:51240, cur:67284, qty:0.62, gain:true },
-      { sym:'ETH', name:'Ethereum', avg:2840, cur:3521, qty:4.2, gain:true },
-      { sym:'SOL', name:'Solana', avg:202, cur:178, qty:38, gain:false },
-      { sym:'DOGE', name:'Dogecoin', avg:0.141, cur:0.198, qty:12400, gain:true },
-      { sym:'AAVE', name:'Aave', avg:80, cur:98.4, qty:2, gain:true },
-    ];
-    el.innerHTML = rows.map(r => {
+    el.innerHTML = REPORT_ROWS.map(r => {
       const val = (r.cur - r.avg) * r.qty;
       const pct = ((r.cur - r.avg)/r.avg*100).toFixed(2);
       return `<div class="pnl-row">
@@ -3602,14 +3677,7 @@ function buildReports() {
 
   const mp = document.getElementById('monthlyPerf');
   if (mp) {
-    const months = [
-      { m:'May 2026', gain:true,  pct:'+3.2%',  val:'+$2,480' },
-      { m:'Apr 2026', gain:true,  pct:'+8.7%',  val:'+$6,120' },
-      { m:'Mar 2026', gain:false, pct:'-2.1%',  val:'-$1,340' },
-      { m:'Feb 2026', gain:true,  pct:'+12.4%', val:'+$7,890' },
-      { m:'Jan 2026', gain:true,  pct:'+5.8%',  val:'+$3,210' },
-    ];
-    mp.innerHTML = months.map(m => `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+    mp.innerHTML = MONTHLY_PERF.map(m => `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
       <div style="font-size:12px;color:var(--gray-300);">${m.m}</div>
       <div style="display:flex;gap:12px;font-family:'Space Mono',monospace;font-size:11px;">
         <span style="color:${m.gain?'var(--bull)':'var(--bear)'};">${m.pct}</span>
@@ -3619,21 +3687,41 @@ function buildReports() {
   }
 }
 
+function exportReportsCsv() {
+  const header = ['Symbol','Name','Quantity','Average Price','Current Price','PnL USD','PnL %'];
+  const lines = REPORT_ROWS.map(r => {
+    const val = (r.cur - r.avg) * r.qty;
+    const pct = ((r.cur - r.avg)/r.avg*100).toFixed(2) + '%';
+    return [r.sym, r.name, r.qty, r.avg, r.cur, val.toFixed(2), pct].join(',');
+  });
+  const blob = new Blob([[header.join(','), ...lines].join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'cryptex-pnl-report.csv';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 // ====== NEWS ======
-function buildNews() {
-  const items = [
-    { emoji:'📈', tag:'BTC',   src:'CoinDesk',     title:'Bitcoin breaks through $68K resistance; analysts eye $75K next',           time:'12m' },
-    { emoji:'🏦', tag:'ETH',   src:'CryptoSlate',  title:'Ethereum ETF sees record $840M inflow in single trading day',               time:'38m' },
-    { emoji:'⚡', tag:'SOL',   src:'The Block',    title:'Solana DeFi volume surges 340% as memecoin season heats up',                time:'1h' },
-    { emoji:'🌐', tag:'MACRO', src:'Bloomberg',    title:'Fed signals potential rate cut; crypto markets respond positively',         time:'2h' },
-    { emoji:'🔐', tag:'SEC',   src:'Reuters',      title:'SEC approves new crypto custody rules for institutional firms',             time:'3h' },
-    { emoji:'🚀', tag:'DOGE',  src:'CoinTelegraph',title:'Dogecoin surges 22% on renewed retail interest and whale activity',        time:'4h' },
-    { emoji:'🔷', tag:'ETH',   src:'Decrypt',      title:'EIP-7702 upgrade goes live — Ethereum UX set for major improvement',       time:'5h' },
-    { emoji:'💰', tag:'BTC',   src:'Forbes',       title:'MicroStrategy adds 1,000 BTC to treasury, total holdings now 214K',        time:'6h' },
-  ];
+const NEWS_ITEMS = [
+  { emoji:'📈', tag:'BTC',   src:'CoinDesk',      title:'Bitcoin breaks through $68K resistance; analysts eye $75K next',           time:'12m' },
+  { emoji:'🏦', tag:'ETH',   src:'CryptoSlate',   title:'Ethereum ETF sees record $840M inflow in single trading day',              time:'38m' },
+  { emoji:'⚡', tag:'SOL',   src:'The Block',     title:'Solana DeFi volume surges 340% as memecoin season heats up',               time:'1h' },
+  { emoji:'🌐', tag:'MACRO', src:'Bloomberg',     title:'Fed signals potential rate cut; crypto markets respond positively',        time:'2h' },
+  { emoji:'🔐', tag:'MACRO', src:'Reuters',       title:'SEC approves new crypto custody rules for institutional firms',            time:'3h' },
+  { emoji:'🚀', tag:'DOGE',  src:'CoinTelegraph', title:'Dogecoin surges 22% on renewed retail interest and whale activity',        time:'4h' },
+  { emoji:'🔷', tag:'ETH',   src:'Decrypt',       title:'EIP-7702 upgrade goes live — Ethereum UX set for major improvement',       time:'5h' },
+  { emoji:'💰', tag:'BTC',   src:'Forbes',        title:'MicroStrategy adds 1,000 BTC to treasury, total holdings now 214K',        time:'6h' },
+];
+
+function buildNews(filter = 'all') {
+  const items = filter === 'all' ? NEWS_ITEMS : NEWS_ITEMS.filter(n => n.tag.toLowerCase() === filter.toLowerCase());
   const grid = document.getElementById('newsGrid');
   if (!grid) return;
-  grid.innerHTML = items.map(n => `<div class="news-item">
+  grid.innerHTML = items.length ? items.map(n => `<div class="news-item">
     <div class="news-img">${n.emoji}</div>
     <div class="news-content">
       <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;">
@@ -3643,7 +3731,7 @@ function buildNews() {
       <div class="news-title">${n.title}</div>
       <div class="news-time">${n.time} ago</div>
     </div>
-  </div>`).join('');
+  </div>`).join('') : `<div class="card card-pad" style="grid-column:1 / -1;text-align:center;color:var(--gray-500);font-family:'Space Mono',monospace;font-size:12px;">No ${filter} signals right now</div>`;
 }
 
 // ====== HEATMAP ======
@@ -3876,6 +3964,7 @@ function drawVolCanvas(canvasId, data) {
 
 // ====== DASHBOARD CHART ======
 function resizeAndDrawDash() {
+  if (!document.getElementById('mainChart')) return;
   drawChartCanvas('mainChart', chartData, currentChartType, currentTimeRange, animationCandle);
   drawVolCanvas('volumeChart', chartData);
 }
@@ -3989,6 +4078,55 @@ function selectTradeCoin(sym) {
   resizeAndDrawTrade();
 }
 
+function updateTradeQuote() {
+  const amountEl = document.getElementById('tradeAmount');
+  const qtyEl = document.getElementById('tradeQty');
+  const feeEl = document.getElementById('tradeFee');
+  const sel = document.getElementById('tradeCoinSelect');
+  if (!amountEl || !qtyEl || !feeEl || !sel) return;
+  const coin = COINS.find(c => c.sym === sel.value) || COINS[0];
+  const amount = Number(amountEl.value || 0);
+  if (document.activeElement === amountEl && amount > 0) qtyEl.value = (amount / coin.price).toFixed(8);
+  feeEl.textContent = '$' + (amount * 0.001).toFixed(2);
+}
+
+function placeStaticOrder() {
+  const sel = document.getElementById('tradeCoinSelect');
+  const amount = Number(document.getElementById('tradeAmount')?.value || 0);
+  const orders = document.getElementById('openOrders');
+  if (!sel || !orders) return;
+  const coin = COINS.find(c => c.sym === sel.value) || COINS[0];
+  const usd = amount > 0 ? amount : 250;
+  const qty = (usd / coin.price).toFixed(6);
+  orders.style.cssText = "display:flex;flex-direction:column;gap:8px;font-size:11px;color:var(--gray-300);font-family:'Space Mono',monospace;padding:0;text-align:left;";
+  orders.innerHTML = `<div style="display:flex;justify-content:space-between;gap:12px;padding:10px;border:1px solid rgba(255,255,255,0.08);border-radius:8px;background:rgba(255,255,255,0.03);">
+    <span style="color:${currentTradeTab === 'buy' ? 'var(--bull)' : 'var(--bear)'};">${currentTradeTab.toUpperCase()} ${coin.sym}</span>
+    <span>${qty} · $${usd.toLocaleString()}</span>
+  </div>`;
+}
+
+function initTradeControls() {
+  const amountEl = document.getElementById('tradeAmount');
+  const qtyEl = document.getElementById('tradeQty');
+  if (amountEl && amountEl.dataset.wired !== '1') {
+    amountEl.dataset.wired = '1';
+    amountEl.addEventListener('input', updateTradeQuote);
+  }
+  if (qtyEl && qtyEl.dataset.wired !== '1') {
+    qtyEl.dataset.wired = '1';
+    qtyEl.addEventListener('input', () => {
+      const sel = document.getElementById('tradeCoinSelect');
+      const amountEl = document.getElementById('tradeAmount');
+      const feeEl = document.getElementById('tradeFee');
+      if (!sel || !amountEl || !feeEl) return;
+      const coin = COINS.find(c => c.sym === sel.value) || COINS[0];
+      const amount = Number(qtyEl.value || 0) * coin.price;
+      amountEl.value = amount ? amount.toFixed(2) : '';
+      feeEl.textContent = '$' + (amount * 0.001).toFixed(2);
+    });
+  }
+}
+
 // ====== PERFORMANCE CHART ======
 function drawPerfChart() {
   const canvas = document.getElementById('perfChart');
@@ -4039,6 +4177,18 @@ function selectCoin(sym) {
   const coin = COINS.find(c => c.sym === sym);
   if (!coin) return;
   selectedCoin = coin;
+
+  if (!document.getElementById('mainCoinIcon')) {
+    const tradeSelect = document.getElementById('tradeCoinSelect');
+    if (tradeSelect) {
+      tradeSelect.value = sym;
+      selectTradeCoin(sym);
+    }
+    document.querySelectorAll('.watchlist-item').forEach(el => {
+      el.classList.toggle('selected', el.dataset.sym === sym);
+    });
+    return;
+  }
 
   document.getElementById('mainCoinIcon').textContent = sym.substring(0,3);
   document.getElementById('mainCoinName').textContent = coin.name;
@@ -4139,7 +4289,8 @@ function startLiveUpdates() {
       c.price = Math.max(c.price * 0.97, c.price + change);
     });
     const btc = COINS[0];
-    document.getElementById('mainPrice').textContent = fmtPrice(btc.price);
+    const mainPrice = document.getElementById('mainPrice');
+    if (mainPrice) mainPrice.textContent = fmtPrice(btc.price);
   }, 3000);
 }
 
@@ -4156,6 +4307,7 @@ window.addEventListener('resize', () => {
 
 // ====== INIT ======
 function init() {
+  initSettingsControls();
   buildWatchlist();
   buildFullWatchlist();
   buildTransactionsWatch();
@@ -4166,6 +4318,7 @@ function init() {
   buildReports();
   buildDonut();
   buildPnL();
+  initTradeControls();
 
   // Dashboard chart
   chartData = generatePriceData(selectedCoin.price, 60);
@@ -4277,87 +4430,58 @@ function animateLetters() {
       el.appendChild(span);
     });
     el.classList.add('char-animate');
+  });
+}
 
-/* ====== THEME (LIGHT/DARK) TOGGLE ====== */
-(function(){
-  const css = document.createElement('style');
-  css.textContent = `
-    body, .app-wrapper, .sidebar, .topbar, .card, .market-table thead th,
-    .search-input, .nav-item { transition: background-color .35s ease, color .35s ease, border-color .35s ease; }
+function filterSignals(button, filter) {
+  document.querySelectorAll('#page-signals .filter-btn').forEach(btn => btn.classList.remove('active'));
+  button.classList.add('active');
+  buildNews(filter);
+}
 
-    body.light-theme {
-      --black: #f4f6fa;
-      --white: #0a0d12;
-      --gray-100: #14181f;
-      --gray-200: #2a2f38;
-      --gray-300: #4a5160;
-      --gray-400: #6b7280;
-      --gray-500: #9aa3b2;
-      --gray-600: #c4cad4;
-      --gray-700: #dde2ea;
-      --gray-800: #eef1f6;
-      --gray-900: #ffffff;
-      --glow: rgba(0,0,0,0.08);
-      background: #f4f6fa !important;
-      color: #0a0d12 !important;
-    }
-    body.light-theme .topbar,
-    body.light-theme .sidebar,
-    body.light-theme .card,
-    body.light-theme .app-wrapper { background: #ffffff !important; border-color: rgba(0,0,0,0.08) !important; color: #0a0d12 !important; }
-    body.light-theme .market-table thead th,
-    body.light-theme .market-table td { color: #0a0d12 !important; border-color: rgba(0,0,0,0.06) !important; }
-    body.light-theme .nav-item { color: #4a5160 !important; }
-    body.light-theme .nav-item.active { background: rgba(0,0,0,0.06) !important; color: #0a0d12 !important; }
-    body.light-theme .page-title,
-    body.light-theme .section-title { color: #0a0d12 !important; }
-    body.light-theme .page-subtitle,
-    body.light-theme .section-subtitle { color: #4a5160 !important; }
-    body.light-theme .search-input { background: #f4f6fa !important; color: #0a0d12 !important; border-color: rgba(0,0,0,0.1) !important; }
-  `;
-  document.head.appendChild(css);
+function filterHistory(button, filter) {
+  document.querySelectorAll('#page-history .filter-btn').forEach(btn => btn.classList.remove('active'));
+  button.classList.add('active');
+  buildFullHistory(filter);
+}
 
-  // Restore saved theme
+function syncThemeToggle() {
+  const toggle = document.getElementById('themeToggle');
+  if (!toggle) return;
+  const isLight = document.body.classList.contains('light-theme');
+  toggle.classList.toggle('on', !isLight);
+  toggle.classList.toggle('off', isLight);
+}
+
+function applySavedTheme() {
   if (localStorage.getItem('cryptex-theme') === 'light') {
     document.body.classList.add('light-theme');
   }
+  syncThemeToggle();
+}
 
-  // Wire up the Dark Mode toggle on settings page
-  function wireToggle(){
-    const rows = document.querySelectorAll('#page-settings .toggle-row');
-    rows.forEach(row => {
-      const label = row.querySelector('.toggle-label');
-      if (!label || !/dark mode/i.test(label.textContent)) return;
-      const toggle = row.querySelector('.toggle');
-      if (!toggle || toggle.dataset.wired) return;
-      toggle.dataset.wired = '1';
-      toggle.style.cursor = 'pointer';
+function toggleTheme() {
+  const nextIsLight = !document.body.classList.contains('light-theme');
+  document.body.classList.toggle('light-theme', nextIsLight);
+  localStorage.setItem('cryptex-theme', nextIsLight ? 'light' : 'dark');
+  syncThemeToggle();
+}
 
-      const sync = () => {
-        const isLight = document.body.classList.contains('light-theme');
-        toggle.classList.toggle('on', !isLight);
-        toggle.classList.toggle('off', isLight);
-      };
-      sync();
-
-      toggle.addEventListener('click', () => {
-        document.body.classList.toggle('light-theme');
-        localStorage.setItem('cryptex-theme',
-          document.body.classList.contains('light-theme') ? 'light' : 'dark');
-        sync();
-      });
+function initSettingsControls() {
+  document.querySelectorAll('#page-settings .toggle').forEach(toggle => {
+    if (toggle.dataset.wired === '1') return;
+    toggle.dataset.wired = '1';
+    toggle.addEventListener('click', () => {
+      if (toggle.id === 'themeToggle') {
+        toggleTheme();
+        return;
+      }
+      toggle.classList.toggle('on');
+      toggle.classList.toggle('off');
     });
-  }
-  document.addEventListener('DOMContentLoaded', wireToggle);
-  // Also re-wire when user navigates to settings
-  const origSwitch = window.switchPage;
-  if (typeof origSwitch === 'function') {
-    window.switchPage = function(pageId, navEl){
-      origSwitch(pageId, navEl);
-      if (pageId === 'settings') setTimeout(wireToggle, 60);
-    };
-  }
-})();
+  });
+  applySavedTheme();
+}
 </script>
 </body>
 </html>
