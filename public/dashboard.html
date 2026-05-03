@@ -3483,23 +3483,27 @@ function buildTransactions(containerId) {
 
 function buildTransactionsWatch() { buildTransactions('txRowsWatch'); }
 
-function buildFullHistory() {
-  const txs = [
-    { type:'buy',     coin:'BTC',  amount:'+0.12 BTC',   val:'$8,074',   date:'May 3, 2026 · 14:22' },
-    { type:'sell',    coin:'ETH',  amount:'-1.5 ETH',    val:'$5,282',   date:'May 3, 2026 · 09:15' },
-    { type:'buy',     coin:'SOL',  amount:'+15 SOL',     val:'$2,670',   date:'May 2, 2026 · 18:44' },
-    { type:'receive', coin:'DOGE', amount:'+5,000 DOGE', val:'$990',     date:'May 1, 2026 · 11:02' },
-    { type:'buy',     coin:'AAVE', amount:'+2 AAVE',     val:'$196',     date:'Apr 30, 2026 · 08:30' },
-    { type:'sell',    coin:'BNB',  amount:'-0.5 BNB',    val:'$206',     date:'Apr 29, 2026 · 17:55' },
-    { type:'buy',     coin:'BTC',  amount:'+0.05 BTC',   val:'$3,364',   date:'Apr 28, 2026 · 12:10' },
-    { type:'buy',     coin:'LINK', amount:'+10 LINK',    val:'$148',     date:'Apr 27, 2026 · 09:01' },
-    { type:'sell',    coin:'DOT',  amount:'-20 DOT',     val:'$164',     date:'Apr 26, 2026 · 16:40' },
-    { type:'buy',     coin:'MATIC',amount:'+500 MATIC',  val:'$360',     date:'Apr 25, 2026 · 14:22' },
-  ];
+const HISTORY_TXS = [
+  { type:'buy',     coin:'BTC',   amount:'+0.12 BTC',    val:'$8,074',  date:'May 3, 2026 · 14:22' },
+  { type:'sell',    coin:'ETH',   amount:'-1.5 ETH',     val:'$5,282',  date:'May 3, 2026 · 09:15' },
+  { type:'buy',     coin:'SOL',   amount:'+15 SOL',      val:'$2,670',  date:'May 2, 2026 · 18:44' },
+  { type:'receive', coin:'DOGE',  amount:'+5,000 DOGE',  val:'$990',    date:'May 1, 2026 · 11:02' },
+  { type:'buy',     coin:'AAVE',  amount:'+2 AAVE',      val:'$196',    date:'Apr 30, 2026 · 08:30' },
+  { type:'sell',    coin:'BNB',   amount:'-0.5 BNB',     val:'$206',    date:'Apr 29, 2026 · 17:55' },
+  { type:'buy',     coin:'BTC',   amount:'+0.05 BTC',    val:'$3,364',  date:'Apr 28, 2026 · 12:10' },
+  { type:'buy',     coin:'LINK',  amount:'+10 LINK',     val:'$148',    date:'Apr 27, 2026 · 09:01' },
+  { type:'sell',    coin:'DOT',   amount:'-20 DOT',      val:'$164',    date:'Apr 26, 2026 · 16:40' },
+  { type:'buy',     coin:'MATIC', amount:'+500 MATIC',   val:'$360',    date:'Apr 25, 2026 · 14:22' },
+  { type:'receive', coin:'USDT',  amount:'+2,000 USDT',  val:'$2,000',  date:'Apr 24, 2026 · 10:05' },
+  { type:'sell',    coin:'AVAX',  amount:'-4 AVAX',      val:'$153',    date:'Apr 23, 2026 · 19:18' },
+];
+
+function buildFullHistory(filter = 'all') {
+  const txs = filter === 'all' ? HISTORY_TXS : HISTORY_TXS.filter(t => t.type === filter);
   const icons = { buy:'↓', sell:'↑', receive:'→' };
   const el = document.getElementById('txFull');
   if (!el) return;
-  el.innerHTML = txs.map(t => `<div class="tx-row">
+  el.innerHTML = txs.length ? txs.map(t => `<div class="tx-row">
     <div class="tx-icon ${t.type}">${icons[t.type]}</div>
     <div class="tx-info">
       <div class="tx-type ${t.type}">${t.type}</div>
@@ -3509,7 +3513,7 @@ function buildFullHistory() {
       <div class="tx-val" style="color:${t.type==='sell'?'var(--bear)':'var(--bull)'}">${t.val}</div>
       <div class="tx-coin">${t.amount}</div>
     </div>
-  </div>`).join('');
+  </div>`).join('') : `<div style="padding:28px 0;text-align:center;color:var(--gray-500);font-family:'Space Mono',monospace;font-size:12px;">No ${filter} transactions found</div>`;
 }
 
 // ====== DONUT CHART ======
@@ -3571,17 +3575,26 @@ function buildPnL() {
 }
 
 // ====== REPORTS ======
+const REPORT_ROWS = [
+  { sym:'BTC', name:'Bitcoin', avg:51240, cur:67284, qty:0.62, gain:true },
+  { sym:'ETH', name:'Ethereum', avg:2840, cur:3521, qty:4.2, gain:true },
+  { sym:'SOL', name:'Solana', avg:202, cur:178, qty:38, gain:false },
+  { sym:'DOGE', name:'Dogecoin', avg:0.141, cur:0.198, qty:12400, gain:true },
+  { sym:'AAVE', name:'Aave', avg:80, cur:98.4, qty:2, gain:true },
+];
+
+const MONTHLY_PERF = [
+  { m:'May 2026', gain:true,  pct:'+3.2%',  val:'+$2,480' },
+  { m:'Apr 2026', gain:true,  pct:'+8.7%',  val:'+$6,120' },
+  { m:'Mar 2026', gain:false, pct:'-2.1%',  val:'-$1,340' },
+  { m:'Feb 2026', gain:true,  pct:'+12.4%', val:'+$7,890' },
+  { m:'Jan 2026', gain:true,  pct:'+5.8%',  val:'+$3,210' },
+];
+
 function buildReports() {
   const el = document.getElementById('reportsPnl');
   if (el) {
-    const rows = [
-      { sym:'BTC', name:'Bitcoin', avg:51240, cur:67284, qty:0.62, gain:true },
-      { sym:'ETH', name:'Ethereum', avg:2840, cur:3521, qty:4.2, gain:true },
-      { sym:'SOL', name:'Solana', avg:202, cur:178, qty:38, gain:false },
-      { sym:'DOGE', name:'Dogecoin', avg:0.141, cur:0.198, qty:12400, gain:true },
-      { sym:'AAVE', name:'Aave', avg:80, cur:98.4, qty:2, gain:true },
-    ];
-    el.innerHTML = rows.map(r => {
+    el.innerHTML = REPORT_ROWS.map(r => {
       const val = (r.cur - r.avg) * r.qty;
       const pct = ((r.cur - r.avg)/r.avg*100).toFixed(2);
       return `<div class="pnl-row">
@@ -3602,14 +3615,7 @@ function buildReports() {
 
   const mp = document.getElementById('monthlyPerf');
   if (mp) {
-    const months = [
-      { m:'May 2026', gain:true,  pct:'+3.2%',  val:'+$2,480' },
-      { m:'Apr 2026', gain:true,  pct:'+8.7%',  val:'+$6,120' },
-      { m:'Mar 2026', gain:false, pct:'-2.1%',  val:'-$1,340' },
-      { m:'Feb 2026', gain:true,  pct:'+12.4%', val:'+$7,890' },
-      { m:'Jan 2026', gain:true,  pct:'+5.8%',  val:'+$3,210' },
-    ];
-    mp.innerHTML = months.map(m => `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+    mp.innerHTML = MONTHLY_PERF.map(m => `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
       <div style="font-size:12px;color:var(--gray-300);">${m.m}</div>
       <div style="display:flex;gap:12px;font-family:'Space Mono',monospace;font-size:11px;">
         <span style="color:${m.gain?'var(--bull)':'var(--bear)'};">${m.pct}</span>
@@ -3619,21 +3625,41 @@ function buildReports() {
   }
 }
 
+function exportReportsCsv() {
+  const header = ['Symbol','Name','Quantity','Average Price','Current Price','PnL USD','PnL %'];
+  const lines = REPORT_ROWS.map(r => {
+    const val = (r.cur - r.avg) * r.qty;
+    const pct = ((r.cur - r.avg)/r.avg*100).toFixed(2) + '%';
+    return [r.sym, r.name, r.qty, r.avg, r.cur, val.toFixed(2), pct].join(',');
+  });
+  const blob = new Blob([[header.join(','), ...lines].join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'cryptex-pnl-report.csv';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
 // ====== NEWS ======
-function buildNews() {
-  const items = [
-    { emoji:'📈', tag:'BTC',   src:'CoinDesk',     title:'Bitcoin breaks through $68K resistance; analysts eye $75K next',           time:'12m' },
-    { emoji:'🏦', tag:'ETH',   src:'CryptoSlate',  title:'Ethereum ETF sees record $840M inflow in single trading day',               time:'38m' },
-    { emoji:'⚡', tag:'SOL',   src:'The Block',    title:'Solana DeFi volume surges 340% as memecoin season heats up',                time:'1h' },
-    { emoji:'🌐', tag:'MACRO', src:'Bloomberg',    title:'Fed signals potential rate cut; crypto markets respond positively',         time:'2h' },
-    { emoji:'🔐', tag:'SEC',   src:'Reuters',      title:'SEC approves new crypto custody rules for institutional firms',             time:'3h' },
-    { emoji:'🚀', tag:'DOGE',  src:'CoinTelegraph',title:'Dogecoin surges 22% on renewed retail interest and whale activity',        time:'4h' },
-    { emoji:'🔷', tag:'ETH',   src:'Decrypt',      title:'EIP-7702 upgrade goes live — Ethereum UX set for major improvement',       time:'5h' },
-    { emoji:'💰', tag:'BTC',   src:'Forbes',       title:'MicroStrategy adds 1,000 BTC to treasury, total holdings now 214K',        time:'6h' },
-  ];
+const NEWS_ITEMS = [
+  { emoji:'📈', tag:'BTC',   src:'CoinDesk',      title:'Bitcoin breaks through $68K resistance; analysts eye $75K next',           time:'12m' },
+  { emoji:'🏦', tag:'ETH',   src:'CryptoSlate',   title:'Ethereum ETF sees record $840M inflow in single trading day',              time:'38m' },
+  { emoji:'⚡', tag:'SOL',   src:'The Block',     title:'Solana DeFi volume surges 340% as memecoin season heats up',               time:'1h' },
+  { emoji:'🌐', tag:'MACRO', src:'Bloomberg',     title:'Fed signals potential rate cut; crypto markets respond positively',        time:'2h' },
+  { emoji:'🔐', tag:'MACRO', src:'Reuters',       title:'SEC approves new crypto custody rules for institutional firms',            time:'3h' },
+  { emoji:'🚀', tag:'DOGE',  src:'CoinTelegraph', title:'Dogecoin surges 22% on renewed retail interest and whale activity',        time:'4h' },
+  { emoji:'🔷', tag:'ETH',   src:'Decrypt',       title:'EIP-7702 upgrade goes live — Ethereum UX set for major improvement',       time:'5h' },
+  { emoji:'💰', tag:'BTC',   src:'Forbes',        title:'MicroStrategy adds 1,000 BTC to treasury, total holdings now 214K',        time:'6h' },
+];
+
+function buildNews(filter = 'all') {
+  const items = filter === 'all' ? NEWS_ITEMS : NEWS_ITEMS.filter(n => n.tag.toLowerCase() === filter.toLowerCase());
   const grid = document.getElementById('newsGrid');
   if (!grid) return;
-  grid.innerHTML = items.map(n => `<div class="news-item">
+  grid.innerHTML = items.length ? items.map(n => `<div class="news-item">
     <div class="news-img">${n.emoji}</div>
     <div class="news-content">
       <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px;">
@@ -3643,7 +3669,7 @@ function buildNews() {
       <div class="news-title">${n.title}</div>
       <div class="news-time">${n.time} ago</div>
     </div>
-  </div>`).join('');
+  </div>`).join('') : `<div class="card card-pad" style="grid-column:1 / -1;text-align:center;color:var(--gray-500);font-family:'Space Mono',monospace;font-size:12px;">No ${filter} signals right now</div>`;
 }
 
 // ====== HEATMAP ======
