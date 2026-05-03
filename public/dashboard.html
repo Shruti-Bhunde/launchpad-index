@@ -3302,11 +3302,12 @@ function switchPage(pageId, navEl) {
     if (pageId === 'portfolio') { drawPerfChart(); buildDonut(); buildPnL(); }
     if (pageId === 'markets') { buildMarketTable(); }
     if (pageId === 'watchlist') { buildFullWatchlist(); buildTransactionsWatch(); }
-    if (pageId === 'heatmap') { buildHeatmap(); }
+    if (pageId === 'heatmaps') { buildHeatmap(); }
     if (pageId === 'signals') { buildNews(); }
     if (pageId === 'history') { buildFullHistory(); }
     if (pageId === 'reports') { buildReports(); }
     if (pageId === 'trade') { resizeAndDrawTrade(); }
+    if (pageId === 'settings') { syncThemeToggle(); }
   }, 50);
 }
 
