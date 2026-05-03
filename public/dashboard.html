@@ -3964,6 +3964,7 @@ function drawVolCanvas(canvasId, data) {
 
 // ====== DASHBOARD CHART ======
 function resizeAndDrawDash() {
+  if (!document.getElementById('mainChart')) return;
   drawChartCanvas('mainChart', chartData, currentChartType, currentTimeRange, animationCandle);
   drawVolCanvas('volumeChart', chartData);
 }
@@ -4177,6 +4178,18 @@ function selectCoin(sym) {
   if (!coin) return;
   selectedCoin = coin;
 
+  if (!document.getElementById('mainCoinIcon')) {
+    const tradeSelect = document.getElementById('tradeCoinSelect');
+    if (tradeSelect) {
+      tradeSelect.value = sym;
+      selectTradeCoin(sym);
+    }
+    document.querySelectorAll('.watchlist-item').forEach(el => {
+      el.classList.toggle('selected', el.dataset.sym === sym);
+    });
+    return;
+  }
+
   document.getElementById('mainCoinIcon').textContent = sym.substring(0,3);
   document.getElementById('mainCoinName').textContent = coin.name;
   document.getElementById('mainCoinSym').textContent = sym + '/USDT · Binance';
@@ -4276,7 +4289,8 @@ function startLiveUpdates() {
       c.price = Math.max(c.price * 0.97, c.price + change);
     });
     const btc = COINS[0];
-    document.getElementById('mainPrice').textContent = fmtPrice(btc.price);
+    const mainPrice = document.getElementById('mainPrice');
+    if (mainPrice) mainPrice.textContent = fmtPrice(btc.price);
   }, 3000);
 }
 
