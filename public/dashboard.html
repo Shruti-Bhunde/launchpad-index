@@ -4304,87 +4304,58 @@ function animateLetters() {
       el.appendChild(span);
     });
     el.classList.add('char-animate');
+  });
+}
 
-/* ====== THEME (LIGHT/DARK) TOGGLE ====== */
-(function(){
-  const css = document.createElement('style');
-  css.textContent = `
-    body, .app-wrapper, .sidebar, .topbar, .card, .market-table thead th,
-    .search-input, .nav-item { transition: background-color .35s ease, color .35s ease, border-color .35s ease; }
+function filterSignals(button, filter) {
+  document.querySelectorAll('#page-signals .filter-btn').forEach(btn => btn.classList.remove('active'));
+  button.classList.add('active');
+  buildNews(filter);
+}
 
-    body.light-theme {
-      --black: #f4f6fa;
-      --white: #0a0d12;
-      --gray-100: #14181f;
-      --gray-200: #2a2f38;
-      --gray-300: #4a5160;
-      --gray-400: #6b7280;
-      --gray-500: #9aa3b2;
-      --gray-600: #c4cad4;
-      --gray-700: #dde2ea;
-      --gray-800: #eef1f6;
-      --gray-900: #ffffff;
-      --glow: rgba(0,0,0,0.08);
-      background: #f4f6fa !important;
-      color: #0a0d12 !important;
-    }
-    body.light-theme .topbar,
-    body.light-theme .sidebar,
-    body.light-theme .card,
-    body.light-theme .app-wrapper { background: #ffffff !important; border-color: rgba(0,0,0,0.08) !important; color: #0a0d12 !important; }
-    body.light-theme .market-table thead th,
-    body.light-theme .market-table td { color: #0a0d12 !important; border-color: rgba(0,0,0,0.06) !important; }
-    body.light-theme .nav-item { color: #4a5160 !important; }
-    body.light-theme .nav-item.active { background: rgba(0,0,0,0.06) !important; color: #0a0d12 !important; }
-    body.light-theme .page-title,
-    body.light-theme .section-title { color: #0a0d12 !important; }
-    body.light-theme .page-subtitle,
-    body.light-theme .section-subtitle { color: #4a5160 !important; }
-    body.light-theme .search-input { background: #f4f6fa !important; color: #0a0d12 !important; border-color: rgba(0,0,0,0.1) !important; }
-  `;
-  document.head.appendChild(css);
+function filterHistory(button, filter) {
+  document.querySelectorAll('#page-history .filter-btn').forEach(btn => btn.classList.remove('active'));
+  button.classList.add('active');
+  buildFullHistory(filter);
+}
 
-  // Restore saved theme
+function syncThemeToggle() {
+  const toggle = document.getElementById('themeToggle');
+  if (!toggle) return;
+  const isLight = document.body.classList.contains('light-theme');
+  toggle.classList.toggle('on', !isLight);
+  toggle.classList.toggle('off', isLight);
+}
+
+function applySavedTheme() {
   if (localStorage.getItem('cryptex-theme') === 'light') {
     document.body.classList.add('light-theme');
   }
+  syncThemeToggle();
+}
 
-  // Wire up the Dark Mode toggle on settings page
-  function wireToggle(){
-    const rows = document.querySelectorAll('#page-settings .toggle-row');
-    rows.forEach(row => {
-      const label = row.querySelector('.toggle-label');
-      if (!label || !/dark mode/i.test(label.textContent)) return;
-      const toggle = row.querySelector('.toggle');
-      if (!toggle || toggle.dataset.wired) return;
-      toggle.dataset.wired = '1';
-      toggle.style.cursor = 'pointer';
+function toggleTheme() {
+  const nextIsLight = !document.body.classList.contains('light-theme');
+  document.body.classList.toggle('light-theme', nextIsLight);
+  localStorage.setItem('cryptex-theme', nextIsLight ? 'light' : 'dark');
+  syncThemeToggle();
+}
 
-      const sync = () => {
-        const isLight = document.body.classList.contains('light-theme');
-        toggle.classList.toggle('on', !isLight);
-        toggle.classList.toggle('off', isLight);
-      };
-      sync();
-
-      toggle.addEventListener('click', () => {
-        document.body.classList.toggle('light-theme');
-        localStorage.setItem('cryptex-theme',
-          document.body.classList.contains('light-theme') ? 'light' : 'dark');
-        sync();
-      });
+function initSettingsControls() {
+  document.querySelectorAll('#page-settings .toggle').forEach(toggle => {
+    if (toggle.dataset.wired === '1') return;
+    toggle.dataset.wired = '1';
+    toggle.addEventListener('click', () => {
+      if (toggle.id === 'themeToggle') {
+        toggleTheme();
+        return;
+      }
+      toggle.classList.toggle('on');
+      toggle.classList.toggle('off');
     });
-  }
-  document.addEventListener('DOMContentLoaded', wireToggle);
-  // Also re-wire when user navigates to settings
-  const origSwitch = window.switchPage;
-  if (typeof origSwitch === 'function') {
-    window.switchPage = function(pageId, navEl){
-      origSwitch(pageId, navEl);
-      if (pageId === 'settings') setTimeout(wireToggle, 60);
-    };
-  }
-})();
+  });
+  applySavedTheme();
+}
 </script>
 </body>
 </html>
