@@ -71,6 +71,13 @@ function enterDashboard() {
     heroWrapper.classList.add("hero-exit");
 
     setTimeout(() => {
+        // Navigate to the full production dashboard page
+        window.location.href = "/dashboard.html";
+        return;
+    }, 900);
+    return;
+    // legacy inline-dashboard fallback below (unused)
+    setTimeout(() => {
         heroWrapper.style.display = "none";
         dashboard.classList.remove("hidden");
 
