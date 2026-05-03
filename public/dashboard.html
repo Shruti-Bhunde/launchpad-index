@@ -3287,9 +3287,13 @@ function switchPage(pageId, navEl) {
     if (n) n.classList.add('active');
   }
 
+  // Show the matching page, hide all others
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   const page = document.getElementById('page-' + pageId);
   if (page) {
-    page.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    page.classList.add('active');
+    const container = document.querySelector('.main-area');
+    if (container) container.scrollTop = 0;
   }
 
   setTimeout(() => {
