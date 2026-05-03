@@ -4077,6 +4077,55 @@ function selectTradeCoin(sym) {
   resizeAndDrawTrade();
 }
 
+function updateTradeQuote() {
+  const amountEl = document.getElementById('tradeAmount');
+  const qtyEl = document.getElementById('tradeQty');
+  const feeEl = document.getElementById('tradeFee');
+  const sel = document.getElementById('tradeCoinSelect');
+  if (!amountEl || !qtyEl || !feeEl || !sel) return;
+  const coin = COINS.find(c => c.sym === sel.value) || COINS[0];
+  const amount = Number(amountEl.value || 0);
+  if (document.activeElement === amountEl && amount > 0) qtyEl.value = (amount / coin.price).toFixed(8);
+  feeEl.textContent = '$' + (amount * 0.001).toFixed(2);
+}
+
+function placeStaticOrder() {
+  const sel = document.getElementById('tradeCoinSelect');
+  const amount = Number(document.getElementById('tradeAmount')?.value || 0);
+  const orders = document.getElementById('openOrders');
+  if (!sel || !orders) return;
+  const coin = COINS.find(c => c.sym === sel.value) || COINS[0];
+  const usd = amount > 0 ? amount : 250;
+  const qty = (usd / coin.price).toFixed(6);
+  orders.style.cssText = "display:flex;flex-direction:column;gap:8px;font-size:11px;color:var(--gray-300);font-family:'Space Mono',monospace;padding:0;text-align:left;";
+  orders.innerHTML = `<div style="display:flex;justify-content:space-between;gap:12px;padding:10px;border:1px solid rgba(255,255,255,0.08);border-radius:8px;background:rgba(255,255,255,0.03);">
+    <span style="color:${currentTradeTab === 'buy' ? 'var(--bull)' : 'var(--bear)'};">${currentTradeTab.toUpperCase()} ${coin.sym}</span>
+    <span>${qty} · $${usd.toLocaleString()}</span>
+  </div>`;
+}
+
+function initTradeControls() {
+  const amountEl = document.getElementById('tradeAmount');
+  const qtyEl = document.getElementById('tradeQty');
+  if (amountEl && amountEl.dataset.wired !== '1') {
+    amountEl.dataset.wired = '1';
+    amountEl.addEventListener('input', updateTradeQuote);
+  }
+  if (qtyEl && qtyEl.dataset.wired !== '1') {
+    qtyEl.dataset.wired = '1';
+    qtyEl.addEventListener('input', () => {
+      const sel = document.getElementById('tradeCoinSelect');
+      const amountEl = document.getElementById('tradeAmount');
+      const feeEl = document.getElementById('tradeFee');
+      if (!sel || !amountEl || !feeEl) return;
+      const coin = COINS.find(c => c.sym === sel.value) || COINS[0];
+      const amount = Number(qtyEl.value || 0) * coin.price;
+      amountEl.value = amount ? amount.toFixed(2) : '';
+      feeEl.textContent = '$' + (amount * 0.001).toFixed(2);
+    });
+  }
+}
+
 // ====== PERFORMANCE CHART ======
 function drawPerfChart() {
   const canvas = document.getElementById('perfChart');
