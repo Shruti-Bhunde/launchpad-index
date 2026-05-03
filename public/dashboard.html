@@ -52,6 +52,67 @@
     transform: translateY(0);
   }
 
+  body,
+  .app-wrapper,
+  .sidebar,
+  .topbar,
+  .card,
+  .market-table thead th,
+  .search-input,
+  .trade-input,
+  .nav-item {
+    transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+  }
+
+  body.light-theme {
+    --black: #f4f6fa;
+    --white: #0a0d12;
+    --gray-100: #111827;
+    --gray-200: #1f2937;
+    --gray-300: #374151;
+    --gray-400: #4b5563;
+    --gray-500: #6b7280;
+    --gray-600: #9ca3af;
+    --gray-700: #d1d5db;
+    --gray-800: #eef2f7;
+    --gray-900: #ffffff;
+    --glow: rgba(0,0,0,0.08);
+    background: var(--black);
+    color: var(--white);
+  }
+
+  body.light-theme .aurora-base { background: linear-gradient(180deg, #edf2f7 0%, #f8fafc 100%); }
+  body.light-theme .aurora-wave-1 { opacity: 0.12; }
+  body.light-theme .aurora-wave-2 { opacity: 0.10; }
+  body.light-theme .aurora-wave-3 { opacity: 0.08; }
+  body.light-theme .topbar { background: rgba(255,255,255,0.92); border-bottom-color: rgba(0,0,0,0.08); }
+  body.light-theme .sidebar { background: rgba(255,255,255,0.86); border-right-color: rgba(0,0,0,0.08); }
+  body.light-theme .card,
+  body.light-theme .dashboard-summary,
+  body.light-theme .hero-panel,
+  body.light-theme .mover-card { background: rgba(255,255,255,0.78); border-color: rgba(0,0,0,0.09); box-shadow: 0 12px 36px rgba(15,23,42,0.08); }
+  body.light-theme .card::before { background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(0,126,68,0.09), transparent 60%); }
+  body.light-theme .nav-item { color: var(--gray-400); }
+  body.light-theme .nav-item:hover,
+  body.light-theme .nav-item.active { background: rgba(0,126,68,0.08); border-color: rgba(0,126,68,0.22); color: var(--bull); }
+  body.light-theme .market-table thead th { background: rgba(255,255,255,0.95); }
+  body.light-theme .market-table tbody tr:hover,
+  body.light-theme .watchlist-item:hover,
+  body.light-theme .pnl-row:hover,
+  body.light-theme .tx-row:hover { background: rgba(0,0,0,0.04); }
+  body.light-theme .search-input,
+  body.light-theme .trade-input,
+  body.light-theme select.trade-input { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.1); color: var(--white); }
+  body.light-theme .filter-btn,
+  body.light-theme .time-btn,
+  body.light-theme .ctype-btn,
+  body.light-theme .btn-icon { border-color: rgba(0,0,0,0.12); color: var(--gray-400); }
+  body.light-theme .filter-btn:hover,
+  body.light-theme .time-btn:hover,
+  body.light-theme .ctype-btn:hover,
+  body.light-theme .btn-icon:hover { color: var(--white); border-color: rgba(0,126,68,0.25); background: rgba(0,126,68,0.06); }
+  body.light-theme .toggle.off { background: rgba(0,0,0,0.14); }
+
   body::before { content: none; }
 
   body::after { content: none; }
